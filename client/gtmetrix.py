@@ -57,3 +57,73 @@ class GTMetrixClient:
         response = await self._client.get("/status")
         response.raise_for_status()
         return unwrap_jsonapi(response.json())
+
+    async def start_test(self, url: str) -> dict:
+        """Start a new GTMetrix test for the given URL.
+
+        Sends POST /tests with a JSON:API body. Returns unwrapped test data
+        including 'id', 'state', and 'credits_left' from the meta block.
+
+        Raises:
+            httpx.HTTPStatusError: On non-2xx responses (e.g. 402 no credits).
+        """
+        assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        payload = {
+            "data": {
+                "type": "test",
+                "attributes": {"url": url},
+            }
+        }
+        response = await self._client.post("/tests", json=payload)
+        response.raise_for_status()
+        raw = response.json()
+        result = unwrap_jsonapi(raw)
+        # Include credits_left from meta block if present
+        meta = raw.get("meta", {})
+        if "credits_left" in meta:
+            result["credits_left"] = meta["credits_left"]
+        return result
+
+    async def get_test(self, test_id: str) -> dict:
+        """Get current test status.
+
+        Returns unwrapped test or report data (type may be 'test' or 'report'
+        if the 303 redirect to the report was followed).
+
+        Raises:
+            httpx.HTTPStatusError: On non-2xx responses.
+        """
+        assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        response = await self._client.get(f"/tests/{test_id}")
+        response.raise_for_status()
+        return unwrap_jsonapi(response.json())
+
+    async def get_report(self, report_id: str) -> dict:
+        """Fetch a completed report's data including Core Web Vitals.
+
+        Returns unwrapped report dict with performance_score, structure_score,
+        largest_contentful_paint, total_blocking_time, cumulative_layout_shift.
+
+        Raises:
+            httpx.HTTPStatusError: On non-2xx responses.
+        """
+        assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        response = await self._client.get(f"/reports/{report_id}")
+        response.raise_for_status()
+        return unwrap_jsonapi(response.json())
+
+    async def get_resource(self, report_id: str, resource_name: str) -> dict:
+        """Fetch a report sub-resource (lighthouse, har, etc.).
+
+        Returns the raw JSON response directly -- sub-resources are NOT
+        wrapped in JSON:API envelopes.
+
+        Raises:
+            httpx.HTTPStatusError: On non-2xx responses.
+        """
+        assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        response = await self._client.get(
+            f"/reports/{report_id}/resources/{resource_name}"
+        )
+        response.raise_for_status()
+        return response.json()
