@@ -9,12 +9,12 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Server Foundation
 
-- [ ] **SERV-01**: MCP server starts via stdio transport and registers tools with Claude Code
+- [x] **SERV-01**: MCP server starts via stdio transport and registers tools with Claude Code
 - [x] **SERV-02**: API key loaded from .env file via pydantic-settings
 - [x] **SERV-03**: All HTTP calls use httpx.AsyncClient (no sync blocking)
 - [x] **SERV-04**: JSON:API v1.1 responses parsed to flat dicts before returning to Claude
 - [x] **SERV-05**: Errors returned as structured tool results with hints (not raised as exceptions)
-- [ ] **SERV-06**: No stdout output except MCP protocol (logging to stderr only)
+- [x] **SERV-06**: No stdout output except MCP protocol (logging to stderr only)
 
 ### Test Execution
 
@@ -33,7 +33,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Account
 
-- [ ] **ACCT-01**: `gtmetrix_check_status()` returns API credits remaining, account type, refill date
+- [x] **ACCT-01**: `gtmetrix_check_status()` returns API credits remaining, account type, refill date
 
 ## v2 Requirements
 
@@ -68,13 +68,13 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SERV-01 | Phase 1 | Pending |
+| SERV-01 | Phase 1 | Complete |
 | SERV-02 | Phase 1 | In Progress |
 | SERV-03 | Phase 1 | Complete |
 | SERV-04 | Phase 1 | Complete |
 | SERV-05 | Phase 1 | Complete |
 | SERV-06 | Phase 1 | In Progress |
-| ACCT-01 | Phase 1 | Pending |
+| ACCT-01 | Phase 1 | Complete |
 | TEST-01 | Phase 2 | Pending |
 | TEST-02 | Phase 2 | Pending |
 | TEST-03 | Phase 2 | Pending |
