@@ -69,11 +69,11 @@ Which phases cover which requirements. Updated during roadmap creation.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | SERV-01 | Phase 1 | Pending |
-| SERV-02 | Phase 1 | Pending |
+| SERV-02 | Phase 1 | In Progress |
 | SERV-03 | Phase 1 | Pending |
 | SERV-04 | Phase 1 | Pending |
 | SERV-05 | Phase 1 | Pending |
-| SERV-06 | Phase 1 | Pending |
+| SERV-06 | Phase 1 | In Progress |
 | ACCT-01 | Phase 1 | Pending |
 | TEST-01 | Phase 2 | Pending |
 | TEST-02 | Phase 2 | Pending |
