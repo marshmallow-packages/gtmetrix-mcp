@@ -26,7 +26,13 @@ Build a Python MCP server in three phases: establish a working server scaffold w
   3. API key is loaded from `.env` and never hardcoded anywhere
   4. All errors from the GTMetrix API surface as structured tool results with actionable hints, not uncaught exceptions
   5. No output appears on stdout except MCP protocol messages — all logging goes to stderr
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Project scaffold: install deps, .gitignore/.env.example, test infrastructure
+- [ ] 01-02-PLAN.md — Config + parsers: config.py (pydantic-settings) and client/parsers.py (unwrap_jsonapi)
+- [ ] 01-03-PLAN.md — GTMetrixClient: shared httpx.AsyncClient with auth, headers, get_status()
+- [ ] 01-04-PLAN.md — MCP wiring: gtmetrix_check_status tool, main.py FastMCP server, final validation
 
 ### Phase 2: Core Analyze Workflow
 **Goal**: A single tool call scans a URL and returns all the performance data Claude needs to suggest code-level fixes
@@ -57,6 +63,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Server Foundation | 0/? | Not started | - |
+| 1. Server Foundation | 0/4 | Planned | - |
 | 2. Core Analyze Workflow | 0/? | Not started | - |
 | 3. Location and Test Parameters | 0/? | Not started | - |
