@@ -1,0 +1,95 @@
+# Requirements: GTMetrix MCP Server
+
+**Defined:** 2026-03-04
+**Core Value:** Scan a URL and get back structured performance data that Claude can reason about and use to guide code-level fixes.
+
+## v1 Requirements
+
+Requirements for initial release. Each maps to roadmap phases.
+
+### Server Foundation
+
+- [ ] **SERV-01**: MCP server starts via stdio transport and registers tools with Claude Code
+- [ ] **SERV-02**: API key loaded from .env file via pydantic-settings
+- [ ] **SERV-03**: All HTTP calls use httpx.AsyncClient (no sync blocking)
+- [ ] **SERV-04**: JSON:API v1.1 responses parsed to flat dicts before returning to Claude
+- [ ] **SERV-05**: Errors returned as structured tool results with hints (not raised as exceptions)
+- [ ] **SERV-06**: No stdout output except MCP protocol (logging to stderr only)
+
+### Test Execution
+
+- [ ] **TEST-01**: User can start a GTMetrix test for any URL via `gtmetrix_analyze(url)`
+- [ ] **TEST-02**: Test polls automatically every 3 seconds until completion
+- [ ] **TEST-03**: Polling has a hard timeout (default 5 minutes) to prevent hangs
+- [ ] **TEST-04**: User can specify test location via location parameter
+- [ ] **TEST-05**: Location IDs fetched from API and cached in memory
+
+### Report Data
+
+- [ ] **REPT-01**: Report returns Core Web Vitals: LCP, TBT, CLS, performance score, structure score
+- [ ] **REPT-02**: Report returns failing Lighthouse audits (score < 1) with title, description, displayValue
+- [ ] **REPT-03**: Report returns top 10 slowest/largest resources from HAR waterfall with URL, size, duration
+- [ ] **REPT-04**: All report data returned in a single structured response from `gtmetrix_analyze`
+
+### Account
+
+- [ ] **ACCT-01**: `gtmetrix_check_status()` returns API credits remaining, account type, refill date
+
+## v2 Requirements
+
+Deferred to future release. Tracked but not in current roadmap.
+
+### Test Options
+
+- **OPTS-01**: Connection throttle presets (3G, 4G, broadband)
+- **OPTS-02**: Simulated device support (iPhone, Samsung profiles)
+- **OPTS-03**: Lighthouse audit category filter (performance, network, images, scripts)
+
+### Granular Tools
+
+- **GRAN-01**: Separate `gtmetrix_get_lighthouse(report_id)` tool for detailed audit data
+- **GRAN-02**: Separate `gtmetrix_get_har(report_id)` tool for detailed waterfall data
+
+## Out of Scope
+
+| Feature | Reason |
+|---------|--------|
+| Screenshots/video filmstrip | Claude Code has no vision in tool output; binary data adds zero value |
+| Scheduled/recurring scans | Different workflow entirely; on-demand only |
+| Report deletion/management | Destructive operations via LLM are risky |
+| Full raw Lighthouse JSON | 200KB+ destroys context window; filtered output only |
+| Full raw HAR file | 1-2MB unusable in context; top-N summary only |
+| Caching test results | Results are point-in-time; caching misleads diagnosis |
+| PDF report generation | Scanning own projects, not client reporting |
+
+## Traceability
+
+Which phases cover which requirements. Updated during roadmap creation.
+
+| Requirement | Phase | Status |
+|-------------|-------|--------|
+| SERV-01 | — | Pending |
+| SERV-02 | — | Pending |
+| SERV-03 | — | Pending |
+| SERV-04 | — | Pending |
+| SERV-05 | — | Pending |
+| SERV-06 | — | Pending |
+| TEST-01 | — | Pending |
+| TEST-02 | — | Pending |
+| TEST-03 | — | Pending |
+| TEST-04 | — | Pending |
+| TEST-05 | — | Pending |
+| REPT-01 | — | Pending |
+| REPT-02 | — | Pending |
+| REPT-03 | — | Pending |
+| REPT-04 | — | Pending |
+| ACCT-01 | — | Pending |
+
+**Coverage:**
+- v1 requirements: 16 total
+- Mapped to phases: 0
+- Unmapped: 16 ⚠️
+
+---
+*Requirements defined: 2026-03-04*
+*Last updated: 2026-03-04 after initial definition*
