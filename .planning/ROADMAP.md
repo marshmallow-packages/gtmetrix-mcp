@@ -30,7 +30,7 @@ Build a Python MCP server in three phases: establish a working server scaffold w
 
 Plans:
 - [x] 01-01-PLAN.md — Project scaffold: install deps, .gitignore/.env.example, test infrastructure
-- [ ] 01-02-PLAN.md — Config + parsers: config.py (pydantic-settings) and client/parsers.py (unwrap_jsonapi)
+- [x] 01-02-PLAN.md — Config + parsers: config.py (pydantic-settings) and client/parsers.py (unwrap_jsonapi)
 - [ ] 01-03-PLAN.md — GTMetrixClient: shared httpx.AsyncClient with auth, headers, get_status()
 - [ ] 01-04-PLAN.md — MCP wiring: gtmetrix_check_status tool, main.py FastMCP server, final validation
 
@@ -63,6 +63,6 @@ Phases execute in numeric order: 1 → 2 → 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Server Foundation | 1/4 | In Progress | - |
+| 1. Server Foundation | 2/4 | In Progress|  |
 | 2. Core Analyze Workflow | 0/? | Not started | - |
 | 3. Location and Test Parameters | 0/? | Not started | - |
