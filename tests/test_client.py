@@ -103,3 +103,130 @@ def test_jsonapi_headers_content_type():
     """JSONAPI_HEADERS contains correct Content-Type and Accept for JSON:API."""
     assert JSONAPI_HEADERS["Content-Type"] == "application/vnd.api+json"
     assert JSONAPI_HEADERS["Accept"] == "application/vnd.api+json"
+
+
+# --- Phase 2: Test lifecycle methods ---
+
+from tests.conftest import (
+    MOCK_TEST_RESPONSE,
+    MOCK_TEST_COMPLETED_RESPONSE,
+    MOCK_REPORT_RESPONSE,
+    MOCK_LIGHTHOUSE_RESPONSE,
+)
+import json
+
+
+@pytest.mark.asyncio
+async def test_start_test():
+    """start_test() sends POST /tests with JSON:API body and returns unwrapped dict."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["url"] = url
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result = await client.start_test("https://example.com")
+
+        # Verify correct endpoint and JSON:API body
+        assert captured_request["url"] == "/tests"
+        body = captured_request["json"]
+        assert body["data"]["type"] == "test"
+        assert body["data"]["attributes"]["url"] == "https://example.com"
+
+        # Verify unwrapped result
+        assert result["id"] == "KtbMoPEq"
+        assert result["state"] == "queued"
+        assert "credits_left" in result
+
+
+@pytest.mark.asyncio
+async def test_get_test():
+    """get_test() sends GET /tests/{id} and returns unwrapped dict."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_COMPLETED_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+        mock_http.get = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result = await client.get_test("KtbMoPEq")
+
+        mock_http.get.assert_called_once_with("/tests/KtbMoPEq")
+        assert result["id"] == "KtbMoPEq"
+        assert result["type"] == "test"
+
+
+@pytest.mark.asyncio
+async def test_get_report():
+    """get_report() sends GET /reports/{id} and returns unwrapped dict with CWV fields."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_REPORT_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+        mock_http.get = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result = await client.get_report("KtbMoPEq")
+
+        mock_http.get.assert_called_once_with("/reports/KtbMoPEq")
+        assert result["performance_score"] == 85
+        assert result["structure_score"] == 72
+        assert result["largest_contentful_paint"] == 1200
+        assert result["total_blocking_time"] == 150
+        assert result["cumulative_layout_shift"] == 0.05
+
+
+@pytest.mark.asyncio
+async def test_get_resource():
+    """get_resource() sends GET /reports/{id}/resources/{name} and returns raw JSON."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_LIGHTHOUSE_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+        mock_http.get = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result = await client.get_resource("KtbMoPEq", "lighthouse")
+
+        mock_http.get.assert_called_once_with("/reports/KtbMoPEq/resources/lighthouse")
+        # Raw JSON, NOT unwrapped -- should have "audits" key directly
+        assert "audits" in result
+        assert "id" not in result  # Not unwrapped
+
+
+@pytest.mark.asyncio
+async def test_start_test_http_error():
+    """start_test() raises HTTPStatusError on non-2xx response."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        request = MagicMock(spec=httpx.Request)
+        request.url = "https://gtmetrix.com/api/2.0/tests"
+        mock_response.raise_for_status = MagicMock(
+            side_effect=httpx.HTTPStatusError(
+                "402 Payment Required", request=request, response=mock_response
+            )
+        )
+        mock_http.post = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            with pytest.raises(httpx.HTTPStatusError):
+                await client.start_test("https://example.com")
