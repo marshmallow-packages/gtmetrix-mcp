@@ -11,9 +11,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 - [ ] **SERV-01**: MCP server starts via stdio transport and registers tools with Claude Code
 - [x] **SERV-02**: API key loaded from .env file via pydantic-settings
-- [ ] **SERV-03**: All HTTP calls use httpx.AsyncClient (no sync blocking)
+- [x] **SERV-03**: All HTTP calls use httpx.AsyncClient (no sync blocking)
 - [x] **SERV-04**: JSON:API v1.1 responses parsed to flat dicts before returning to Claude
-- [ ] **SERV-05**: Errors returned as structured tool results with hints (not raised as exceptions)
+- [x] **SERV-05**: Errors returned as structured tool results with hints (not raised as exceptions)
 - [ ] **SERV-06**: No stdout output except MCP protocol (logging to stderr only)
 
 ### Test Execution
@@ -70,9 +70,9 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | SERV-01 | Phase 1 | Pending |
 | SERV-02 | Phase 1 | In Progress |
-| SERV-03 | Phase 1 | Pending |
+| SERV-03 | Phase 1 | Complete |
 | SERV-04 | Phase 1 | Complete |
-| SERV-05 | Phase 1 | Pending |
+| SERV-05 | Phase 1 | Complete |
 | SERV-06 | Phase 1 | In Progress |
 | ACCT-01 | Phase 1 | Pending |
 | TEST-01 | Phase 2 | Pending |
