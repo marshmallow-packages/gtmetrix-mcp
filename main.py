@@ -20,6 +20,7 @@ from mcp.server.fastmcp import FastMCP
 from client.gtmetrix import GTMetrixClient
 from config import settings
 import tools.account as account_tools
+import tools.analyze as analyze_tools
 
 
 @asynccontextmanager
@@ -39,6 +40,7 @@ mcp = FastMCP("gtmetrix", lifespan=lifespan)
 
 # Register all tool modules
 account_tools.register(mcp)
+analyze_tools.register(mcp)
 
 if __name__ == "__main__":
     mcp.run(transport="stdio")
