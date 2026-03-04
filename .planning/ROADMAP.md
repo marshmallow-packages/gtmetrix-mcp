@@ -58,7 +58,11 @@ Plans:
   1. `gtmetrix_analyze(url, location=...)` accepts a location identifier and runs the test from that region
   2. Valid location IDs are fetched from the GTMetrix API and cached in memory so repeated calls do not re-fetch them
   3. Passing an invalid location returns a structured error listing available locations, not a crash
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 03-01-PLAN.md — JSON:API list parser, list_locations() client method with cache, start_test location parameter
+- [ ] 03-02-PLAN.md — Location validation in _analyze_impl, gtmetrix_list_locations tool, MCP wiring verification
 
 ## Progress
 
@@ -69,4 +73,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Server Foundation | 4/4 | Complete   | 2026-03-04 |
 | 2. Core Analyze Workflow | 0/2 | Not started | - |
-| 3. Location and Test Parameters | 0/? | Not started | - |
+| 3. Location and Test Parameters | 0/2 | Not started | - |
