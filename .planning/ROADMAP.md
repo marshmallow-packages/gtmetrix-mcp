@@ -47,7 +47,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 02-01-PLAN.md — Client methods (start_test, get_test, get_report, get_resource) and parser functions (extract_vitals, filter_failing_audits, extract_top_resources)
+- [x] 02-01-PLAN.md — Client methods (start_test, get_test, get_report, get_resource) and parser functions (extract_vitals, filter_failing_audits, extract_top_resources)
 - [ ] 02-02-PLAN.md — Analyze orchestrator (_analyze_impl with polling/timeout/error handling) and MCP wiring
 
 ### Phase 3: Location and Test Parameters
@@ -72,5 +72,5 @@ Phases execute in numeric order: 1 → 2 → 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Server Foundation | 4/4 | Complete   | 2026-03-04 |
-| 2. Core Analyze Workflow | 0/2 | Not started | - |
+| 2. Core Analyze Workflow | 1/2 | In Progress|  |
 | 3. Location and Test Parameters | 0/2 | Not started | - |

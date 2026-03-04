@@ -18,7 +18,7 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Test Execution
 
-- [ ] **TEST-01**: User can start a GTMetrix test for any URL via `gtmetrix_analyze(url)`
+- [x] **TEST-01**: User can start a GTMetrix test for any URL via `gtmetrix_analyze(url)`
 - [ ] **TEST-02**: Test polls automatically every 3 seconds until completion
 - [ ] **TEST-03**: Polling has a hard timeout (default 5 minutes) to prevent hangs
 - [ ] **TEST-04**: User can specify test location via location parameter
@@ -26,9 +26,9 @@ Requirements for initial release. Each maps to roadmap phases.
 
 ### Report Data
 
-- [ ] **REPT-01**: Report returns Core Web Vitals: LCP, TBT, CLS, performance score, structure score
-- [ ] **REPT-02**: Report returns failing Lighthouse audits (score < 1) with title, description, displayValue
-- [ ] **REPT-03**: Report returns top 10 slowest/largest resources from HAR waterfall with URL, size, duration
+- [x] **REPT-01**: Report returns Core Web Vitals: LCP, TBT, CLS, performance score, structure score
+- [x] **REPT-02**: Report returns failing Lighthouse audits (score < 1) with title, description, displayValue
+- [x] **REPT-03**: Report returns top 10 slowest/largest resources from HAR waterfall with URL, size, duration
 - [ ] **REPT-04**: All report data returned in a single structured response from `gtmetrix_analyze`
 
 ### Account
@@ -75,12 +75,12 @@ Which phases cover which requirements. Updated during roadmap creation.
 | SERV-05 | Phase 1 | Complete |
 | SERV-06 | Phase 1 | In Progress |
 | ACCT-01 | Phase 1 | Complete |
-| TEST-01 | Phase 2 | Pending |
+| TEST-01 | Phase 2 | Complete |
 | TEST-02 | Phase 2 | Pending |
 | TEST-03 | Phase 2 | Pending |
-| REPT-01 | Phase 2 | Pending |
-| REPT-02 | Phase 2 | Pending |
-| REPT-03 | Phase 2 | Pending |
+| REPT-01 | Phase 2 | Complete |
+| REPT-02 | Phase 2 | Complete |
+| REPT-03 | Phase 2 | Complete |
 | REPT-04 | Phase 2 | Pending |
 | TEST-04 | Phase 3 | Pending |
 | TEST-05 | Phase 3 | Pending |
