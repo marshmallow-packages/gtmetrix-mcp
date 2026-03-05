@@ -341,6 +341,7 @@ def _mock_config(**kwargs):
     """Create a mock config object with optional defaults."""
     from types import SimpleNamespace
     defaults = {
+        "gtmetrix_default_location": None,
         "gtmetrix_default_browser": None,
         "gtmetrix_default_device": None,
         "gtmetrix_default_adblock": None,
@@ -494,3 +495,51 @@ async def test_analyze_no_default_no_param():
     assert kwargs.get("browser") is None
     assert kwargs.get("adblock") is None
     assert kwargs.get("simulate_device") is None
+
+
+@pytest.mark.asyncio
+async def test_analyze_default_location_from_config():
+    """When no explicit location param and config has gtmetrix_default_location='7', start_test is called with location='7'."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config(gtmetrix_default_location="7")
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("location") == "7"
+
+
+@pytest.mark.asyncio
+async def test_analyze_explicit_location_overrides_config_default():
+    """Explicit location='3' overrides config default of '7'."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config(gtmetrix_default_location="7")
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", location="3", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("location") == "3"
+
+
+@pytest.mark.asyncio
+async def test_analyze_no_default_location_no_param():
+    """When no explicit location and config has gtmetrix_default_location=None, no location sent."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("location") is None
