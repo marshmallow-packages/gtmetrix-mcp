@@ -1,14 +1,32 @@
 [project]
-name = "gtmetrix-mcp-serer"
-version = "0.1.0"
-description = "Add your description here"
+name = "gtmetrix-mcp-server"
+version = "1.0.0"
+description = "MCP server for GTmetrix website performance analysis"
 readme = "README.md"
+license = "MIT"
 requires-python = ">=3.11"
+authors = [
+    { name = "Marshmallow", email = "info@marshmallow.dev" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Internet :: WWW/HTTP",
+]
 dependencies = [
     "httpx>=0.28.1",
     "mcp[cli]>=1.26.0",
     "pydantic-settings>=2.13.1",
 ]
+
+[project.urls]
+Homepage = "https://github.com/marshmallow-packages/gtmetrix-mcp"
+Repository = "https://github.com/marshmallow-packages/gtmetrix-mcp.git"
+Issues = "https://github.com/marshmallow-packages/gtmetrix-mcp/issues"
 
 [dependency-groups]
 dev = [
