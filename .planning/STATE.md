@@ -84,6 +84,7 @@ Recent decisions affecting current work:
 ### Pending Todos
 
 - Commit README with install instructions (docs)
+- Add changelog and keep docs up to date (docs)
 
 ### Blockers/Concerns
 
