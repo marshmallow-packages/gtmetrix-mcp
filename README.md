@@ -28,13 +28,6 @@ cd gtmetrix-mcp-server
 uv sync
 ```
 
-Copy the example env file and add your API key:
-
-```bash
-cp .env.example .env
-# Edit .env and set GTMETRIX_API_KEY=your_actual_key
-```
-
 ## Usage with Claude Code
 
 Add to your Claude Code MCP settings (`~/.claude/settings.json` or project `.mcp.json`):
@@ -44,7 +37,10 @@ Add to your Claude Code MCP settings (`~/.claude/settings.json` or project `.mcp
   "mcpServers": {
     "gtmetrix": {
       "command": "uv",
-      "args": ["run", "--directory", "/path/to/gtmetrix-mcp-server", "python", "main.py"]
+      "args": ["run", "--directory", "/path/to/gtmetrix-mcp-server", "python", "main.py"],
+      "env": {
+        "GTMETRIX_API_KEY": "your_api_key_here"
+      }
     }
   }
 }
@@ -59,10 +55,28 @@ Then ask Claude things like:
 - "Test https://example.com on a phone from London"
 - "What locations can I test from?"
 
+## Usage with Claude Desktop
+
+Add to your Claude Desktop config (`claude_desktop_config.json`):
+
+```json
+{
+  "mcpServers": {
+    "gtmetrix": {
+      "command": "uv",
+      "args": ["run", "--directory", "/path/to/gtmetrix-mcp-server", "python", "main.py"],
+      "env": {
+        "GTMETRIX_API_KEY": "your_api_key_here"
+      }
+    }
+  }
+}
+```
+
 ## Usage with MCP Inspector
 
 ```bash
-uv run mcp dev main.py
+GTMETRIX_API_KEY=your_key uv run mcp dev main.py
 ```
 
 ## Running Tests
@@ -72,6 +86,8 @@ uv run pytest tests/ -v
 ```
 
 ## Configuration
+
+Set these in the `env` block of your MCP client config. See setup examples above.
 
 All parameters can have defaults set via environment variables. Explicit tool parameters always override defaults.
 
@@ -87,7 +103,7 @@ All parameters can have defaults set via environment variables. Explicit tool pa
 
 ```
 main.py              # FastMCP server with lifespan client management
-config.py            # Settings loaded from .env via pydantic-settings
+config.py            # Settings loaded from environment variables via pydantic-settings
 client/
   gtmetrix.py        # Async HTTP client (httpx) with auth and API methods
   parsers.py         # JSON:API response parsers and report data extractors
