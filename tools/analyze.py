@@ -17,8 +17,32 @@ logger = logging.getLogger(__name__)
 POLL_INTERVAL = 3  # seconds between poll requests
 DEFAULT_TIMEOUT = 300  # 5 minutes hard timeout
 
+DEVICE_ALIASES = {
+    "phone": "iphone_16",
+    "tablet": "ipad_air",
+    "desktop": None,  # No simulate_device = desktop (default)
+}
 
-async def _analyze_impl(client, url: str, *, location: str | None = None) -> dict:
+
+def resolve_device(device_input: str | None) -> str | None:
+    """Resolve a device alias to a GTMetrix device ID, or pass through raw IDs."""
+    if device_input is None:
+        return None
+    if device_input.lower() in DEVICE_ALIASES:
+        return DEVICE_ALIASES[device_input.lower()]
+    return device_input  # Raw GTMetrix device ID passthrough
+
+
+async def _analyze_impl(
+    client,
+    url: str,
+    *,
+    location: str | None = None,
+    browser: str | None = None,
+    device: str | None = None,
+    adblock: str | None = None,
+    config=None,
+) -> dict:
     """Core logic for gtmetrix_analyze. Accepts a GTMetrixClient instance.
 
     Orchestrates: start_test -> poll get_test -> fetch report/lighthouse/HAR ->
@@ -44,8 +68,23 @@ async def _analyze_impl(client, url: str, *, location: str | None = None) -> dic
                     "available_locations": accessible,
                 }
 
+        # Resolve defaults from config
+        from config import settings as default_settings
+        cfg = config or default_settings
+        effective_browser = browser if browser is not None else cfg.gtmetrix_default_browser
+        effective_device = device if device is not None else cfg.gtmetrix_default_device
+        effective_adblock = adblock if adblock is not None else cfg.gtmetrix_default_adblock
+        resolved_device = resolve_device(effective_device)
+        adblock_int = int(effective_adblock) if effective_adblock is not None else None
+
         # Start the test
-        test = await client.start_test(url, location=location)
+        test = await client.start_test(
+            url,
+            location=location,
+            browser=effective_browser,
+            adblock=adblock_int,
+            simulate_device=resolved_device,
+        )
         test_id = test.get("id")
         if not test_id:
             return {
@@ -156,7 +195,14 @@ def register(mcp) -> None:
     from mcp.server.fastmcp import Context
 
     @mcp.tool()
-    async def gtmetrix_analyze(url: str, location: str | None = None, *, ctx: Context) -> dict:
+    async def gtmetrix_analyze(
+        url: str,
+        location: str | None = None,
+        browser: str | None = None,
+        device: str | None = None,
+        adblock: str | None = None,
+        *, ctx: Context,
+    ) -> dict:
         """Analyze a URL's web performance with GTMetrix.
 
         Starts a GTMetrix test, waits for completion (polling every 3s, 5-minute
@@ -167,6 +213,11 @@ def register(mcp) -> None:
             url: The URL to analyze.
             location: Optional location ID to run the test from. Use
                 gtmetrix_list_locations() to discover available IDs.
+            browser: Optional browser ID (e.g. "1" for Chrome, "3" for Firefox).
+            device: Optional device alias ("phone", "tablet", "desktop") or raw
+                GTMetrix device ID (e.g. "iphone_16", "samsung_s24"). Simulated
+                devices require a PRO account.
+            adblock: Optional adblock flag ("0" to disable, "1" to enable).
 
         Returns a single dict with:
         - Core Web Vitals (performance_score, LCP, TBT, CLS)
@@ -176,7 +227,13 @@ def register(mcp) -> None:
         Use gtmetrix_check_status() first to verify you have API credits.
         """
         client = ctx.request_context.lifespan_context["client"]
-        return await _analyze_impl(client, url, location=location)
+        return await _analyze_impl(
+            client, url,
+            location=location,
+            browser=browser,
+            device=device,
+            adblock=adblock,
+        )
 
     @mcp.tool()
     async def gtmetrix_list_locations(ctx: Context) -> dict:

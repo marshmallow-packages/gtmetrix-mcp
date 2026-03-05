@@ -239,7 +239,8 @@ async def test_analyze_with_location():
 
     assert "error" not in result
     assert result["url"] == "https://example.com"
-    client.start_test.assert_called_once_with("https://example.com", location="2")
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("location") == "2"
 
 
 @pytest.mark.asyncio
@@ -272,7 +273,8 @@ async def test_analyze_location_string_coercion():
         result = await _analyze_impl(client, "https://example.com", location=2)
 
     assert "error" not in result
-    client.start_test.assert_called_once_with("https://example.com", location="2")
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("location") == "2"
 
 
 @pytest.mark.asyncio
