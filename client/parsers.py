@@ -28,6 +28,21 @@ def unwrap_jsonapi(response: dict) -> dict:
     }
 
 
+def unwrap_jsonapi_list(response: dict) -> list[dict]:
+    """Strip JSON:API envelope from a list response.
+
+    Returns list of flat dicts, each with id, type, and all attributes.
+    Returns empty list if 'data' key is absent or not a list.
+    """
+    data = response.get("data")
+    if not data or not isinstance(data, list):
+        return []
+    return [
+        {"id": item.get("id"), "type": item.get("type"), **item.get("attributes", {})}
+        for item in data
+    ]
+
+
 def extract_vitals(report: dict) -> dict:
     """Extract Core Web Vitals from a report dict.
 

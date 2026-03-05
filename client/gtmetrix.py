@@ -6,7 +6,7 @@ AsyncClient per request.
 """
 import logging
 import httpx
-from client.parsers import unwrap_jsonapi
+from client.parsers import unwrap_jsonapi, unwrap_jsonapi_list
 
 logger = logging.getLogger(__name__)
 
@@ -28,6 +28,7 @@ class GTMetrixClient:
     def __init__(self, api_key: str) -> None:
         self._api_key = api_key
         self._client: httpx.AsyncClient | None = None
+        self._locations_cache: list[dict] | None = None
 
     async def __aenter__(self) -> "GTMetrixClient":
         self._client = httpx.AsyncClient(
@@ -58,20 +59,41 @@ class GTMetrixClient:
         response.raise_for_status()
         return unwrap_jsonapi(response.json())
 
-    async def start_test(self, url: str) -> dict:
+    async def list_locations(self) -> list[dict]:
+        """Fetch available test locations, cached in memory.
+
+        Returns a list of flat dicts with id, type, name, region, default,
+        account_has_access, and browsers fields.
+
+        Raises:
+            httpx.HTTPStatusError: On non-2xx responses.
+        """
+        if self._locations_cache is not None:
+            return self._locations_cache
+        assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        response = await self._client.get("/locations")
+        response.raise_for_status()
+        self._locations_cache = unwrap_jsonapi_list(response.json())
+        return self._locations_cache
+
+    async def start_test(self, url: str, *, location: str | None = None) -> dict:
         """Start a new GTMetrix test for the given URL.
 
-        Sends POST /tests with a JSON:API body. Returns unwrapped test data
-        including 'id', 'state', and 'credits_left' from the meta block.
+        Sends POST /tests with a JSON:API body. Optionally includes a test
+        location. Returns unwrapped test data including 'id', 'state', and
+        'credits_left' from the meta block.
 
         Raises:
             httpx.HTTPStatusError: On non-2xx responses (e.g. 402 no credits).
         """
         assert self._client is not None, "GTMetrixClient must be used as async context manager"
+        attributes: dict = {"url": url}
+        if location is not None:
+            attributes["location"] = location
         payload = {
             "data": {
                 "type": "test",
-                "attributes": {"url": url},
+                "attributes": attributes,
             }
         }
         response = await self._client.post("/tests", json=payload)
