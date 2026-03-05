@@ -12,7 +12,7 @@ Build a Python MCP server in three phases: establish a working server scaffold w
 
 - [x] **Phase 1: Server Foundation** - Working MCP server connected to Claude Code with GTMetrix auth and account status tool (completed 2026-03-04)
 - [ ] **Phase 2: Core Analyze Workflow** - `gtmetrix_analyze(url)` runs test, polls to completion, returns Core Web Vitals + Lighthouse + HAR summary
-- [ ] **Phase 3: Location and Test Parameters** - Location selection and in-memory location cache enable geographic test targeting
+- [x] **Phase 3: Location and Test Parameters** - Location selection and in-memory location cache enable geographic test targeting (completed 2026-03-05)
 
 ## Phase Details
 
@@ -73,4 +73,4 @@ Phases execute in numeric order: 1 → 2 → 3
 |-------|----------------|--------|-----------|
 | 1. Server Foundation | 4/4 | Complete   | 2026-03-04 |
 | 2. Core Analyze Workflow | 1/2 | In Progress|  |
-| 3. Location and Test Parameters | 1/2 | In Progress|  |
+| 3. Location and Test Parameters | 2/2 | Complete   | 2026-03-05 |

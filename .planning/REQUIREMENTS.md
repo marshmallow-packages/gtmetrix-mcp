@@ -21,7 +21,7 @@ Requirements for initial release. Each maps to roadmap phases.
 - [x] **TEST-01**: User can start a GTMetrix test for any URL via `gtmetrix_analyze(url)`
 - [x] **TEST-02**: Test polls automatically every 3 seconds until completion
 - [x] **TEST-03**: Polling has a hard timeout (default 5 minutes) to prevent hangs
-- [ ] **TEST-04**: User can specify test location via location parameter
+- [x] **TEST-04**: User can specify test location via location parameter
 - [x] **TEST-05**: Location IDs fetched from API and cached in memory
 
 ### Report Data
@@ -82,7 +82,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | REPT-02 | Phase 2 | Complete |
 | REPT-03 | Phase 2 | Complete |
 | REPT-04 | Phase 2 | Complete |
-| TEST-04 | Phase 3 | Pending |
+| TEST-04 | Phase 3 | Complete |
 | TEST-05 | Phase 3 | Complete |
 
 **Coverage:**
