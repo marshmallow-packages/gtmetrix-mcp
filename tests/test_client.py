@@ -1,8 +1,8 @@
 """Tests for client/gtmetrix.py -- SERV-03 (async client) and SERV-05 partial."""
 import pytest
 import httpx
-from unittest.mock import AsyncMock, MagicMock, patch, call
-from client.gtmetrix import GTMetrixClient, GTMETRIX_BASE_URL, JSONAPI_HEADERS
+from unittest.mock import AsyncMock, MagicMock, patch
+from client.gtmetrix import GTMetrixClient, JSONAPI_HEADERS
 
 
 MOCK_STATUS_JSON = {
@@ -78,7 +78,7 @@ async def test_client_uses_basic_auth():
         mock_instance = AsyncMock()
         mock_cls.return_value = mock_instance
 
-        async with GTMetrixClient(api_key="my_secret_key") as client:
+        async with GTMetrixClient(api_key="my_secret_key") as _:
             pass
 
         _, kwargs = mock_cls.call_args
@@ -92,7 +92,7 @@ async def test_client_sets_follow_redirects():
         mock_instance = AsyncMock()
         mock_cls.return_value = mock_instance
 
-        async with GTMetrixClient(api_key="key") as client:
+        async with GTMetrixClient(api_key="key") as _:
             pass
 
         _, kwargs = mock_cls.call_args
@@ -107,14 +107,13 @@ def test_jsonapi_headers_content_type():
 
 # --- Phase 2: Test lifecycle methods ---
 
-from tests.conftest import (
+from tests.conftest import (  # noqa: E402
     MOCK_TEST_RESPONSE,
     MOCK_TEST_COMPLETED_RESPONSE,
     MOCK_REPORT_RESPONSE,
     MOCK_LIGHTHOUSE_RESPONSE,
     MOCK_LOCATIONS_RESPONSE,
 )
-import json
 
 
 @pytest.mark.asyncio

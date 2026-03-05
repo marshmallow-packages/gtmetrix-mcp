@@ -1,7 +1,5 @@
 """Tests for config.py -- SERV-02: API key loaded from environment variables via pydantic-settings."""
 import pytest
-from unittest.mock import patch
-import os
 
 
 def test_settings_reads_api_key_from_env(monkeypatch):

@@ -15,12 +15,12 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
-from contextlib import asynccontextmanager
-from mcp.server.fastmcp import FastMCP
-from client.gtmetrix import GTMetrixClient
-from config import get_settings
-import tools.account as account_tools
-import tools.analyze as analyze_tools
+from contextlib import asynccontextmanager  # noqa: E402
+from mcp.server.fastmcp import FastMCP  # noqa: E402
+from client.gtmetrix import GTMetrixClient  # noqa: E402
+from config import get_settings  # noqa: E402
+import tools.account as account_tools  # noqa: E402
+import tools.analyze as analyze_tools  # noqa: E402
 
 
 @asynccontextmanager

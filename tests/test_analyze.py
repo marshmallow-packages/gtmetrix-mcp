@@ -1,7 +1,6 @@
 """Tests for the gtmetrix_analyze orchestrator tool."""
 
 import asyncio
-import time
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import httpx
