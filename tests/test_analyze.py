@@ -311,3 +311,184 @@ async def test_list_locations_impl_error():
 
     assert "error" in result
     assert "Failed to fetch locations" in result["error"]
+
+
+# --- Phase 4: New parameters, device aliases, config defaults ---
+
+
+def _make_param_client(**overrides):
+    """Build an AsyncMock client for parameter tests (immediate completion, no sub-resources needed)."""
+    client = AsyncMock()
+    client.start_test = AsyncMock(
+        return_value=overrides.get(
+            "start_test", {"id": "T1", "type": "test", "state": "queued"}
+        )
+    )
+    client.get_test = AsyncMock(
+        return_value={"type": "test", "state": "completed", "id": "T1"}
+    )
+    client.get_report = AsyncMock(return_value=UNWRAPPED_REPORT)
+    client.get_resource = AsyncMock(
+        side_effect=lambda rid, name: MOCK_LIGHTHOUSE_RESPONSE if name == "lighthouse" else MOCK_HAR_RESPONSE
+    )
+    client.list_locations = AsyncMock(return_value=UNWRAPPED_LOCATIONS)
+    return client
+
+
+def _mock_config(**kwargs):
+    """Create a mock config object with optional defaults."""
+    from types import SimpleNamespace
+    defaults = {
+        "gtmetrix_default_browser": None,
+        "gtmetrix_default_device": None,
+        "gtmetrix_default_adblock": None,
+    }
+    defaults.update(kwargs)
+    return SimpleNamespace(**defaults)
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_browser():
+    """_analyze_impl with browser='3' passes browser='3' to start_test."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", browser="3", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("browser") == "3"
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_adblock():
+    """_analyze_impl with adblock='1' passes adblock=1 (int) to start_test."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", adblock="1", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("adblock") == 1
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_device_phone():
+    """_analyze_impl with device='phone' resolves to simulate_device='iphone_16'."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", device="phone", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("simulate_device") == "iphone_16"
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_device_tablet():
+    """_analyze_impl with device='tablet' resolves to simulate_device='ipad_air'."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", device="tablet", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("simulate_device") == "ipad_air"
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_device_desktop():
+    """_analyze_impl with device='desktop' resolves to simulate_device=None (not sent)."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", device="desktop", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("simulate_device") is None
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_device_raw_id():
+    """_analyze_impl with device='samsung_s24' passes through as simulate_device='samsung_s24'."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", device="samsung_s24", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("simulate_device") == "samsung_s24"
+
+
+@pytest.mark.asyncio
+async def test_analyze_default_from_config():
+    """When no explicit param but config has default, uses config value."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config(gtmetrix_default_browser="3", gtmetrix_default_adblock="1")
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("browser") == "3"
+    assert kwargs.get("adblock") == 1
+
+
+@pytest.mark.asyncio
+async def test_analyze_explicit_overrides_config():
+    """Explicit param takes precedence over config default."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config(gtmetrix_default_browser="1")
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", browser="3", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("browser") == "3"
+
+
+@pytest.mark.asyncio
+async def test_analyze_no_default_no_param():
+    """When both None, param is not sent to start_test."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_param_client()
+    cfg = _mock_config()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", config=cfg)
+
+    assert "error" not in result
+    _, kwargs = client.start_test.call_args
+    assert kwargs.get("browser") is None
+    assert kwargs.get("adblock") is None
+    assert kwargs.get("simulate_device") is None
