@@ -3,15 +3,15 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Completed 04-04-PLAN.md
-last_updated: "2026-03-05T11:42:35Z"
-last_activity: 2026-03-05 — Completed 04-04 (move todo files to done)
+stopped_at: Completed 04-03-PLAN.md
+last_updated: "2026-03-05T11:44:20Z"
+last_activity: 2026-03-05 — Completed 04-03 (default location gap closure)
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 12
-  completed_plans: 11
-  percent: 92
+  completed_plans: 12
+  percent: 100
 ---
 
 # Project State
@@ -26,11 +26,11 @@ See: .planning/PROJECT.md (updated 2026-03-04)
 ## Current Position
 
 Phase: 4 of 4 (Docs & options from todo)
-Plan: 4 of 4 in current phase
-Status: In Progress
-Last activity: 2026-03-05 — Completed 04-04 (move todo files to done)
+Plan: 4 of 4 in current phase (all complete)
+Status: Complete
+Last activity: 2026-03-05 — Completed 04-03 (default location gap closure)
 
-Progress: [█████████░] 92%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -57,6 +57,7 @@ Progress: [█████████░] 92%
 | Phase 03 P02 | 2min | 2 tasks | 2 files |
 | Phase 04-docs-options-from-todo P01 | 3min | 2 tasks | 6 files |
 | Phase 04-docs-options-from-todo P02 | 1min | 2 tasks | 3 files |
+| Phase 04-docs-options-from-todo P03 | 2min | 1 tasks | 3 files |
 | Phase 04-docs-options-from-todo P04 | 1min | 1 tasks | 3 files |
 
 ## Accumulated Context
@@ -88,6 +89,7 @@ Recent decisions affecting current work:
 - [Phase 04-docs-options-from-todo]: Adblock stored as string in config, converted to int at API boundary
 - [Phase 04-docs-options-from-todo]: Keep a Changelog format with semver for CHANGELOG.md
 - [Phase 04-docs-options-from-todo]: PRO features marked with (PRO) tag in device alias reference table
+- [Phase 04-docs-options-from-todo]: Config resolution moved before location validation so defaults also get validated
 
 ### Pending Todos
 
@@ -101,6 +103,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-05T11:42:35Z
-Stopped at: Completed 04-04-PLAN.md
+Last session: 2026-03-05T11:44:20Z
+Stopped at: Completed 04-03-PLAN.md
 Resume file: None
