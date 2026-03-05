@@ -67,14 +67,25 @@ def test_settings_default_adblock_from_env(monkeypatch):
     assert s.gtmetrix_default_adblock == "1"
 
 
+def test_settings_default_location_from_env(monkeypatch):
+    """Settings with GTMETRIX_DEFAULT_LOCATION env var returns that value."""
+    monkeypatch.setenv("GTMETRIX_API_KEY", "key")
+    monkeypatch.setenv("GTMETRIX_DEFAULT_LOCATION", "2")
+    from config import Settings
+    s = Settings()
+    assert s.gtmetrix_default_location == "2"
+
+
 def test_settings_defaults_none_when_unset(monkeypatch):
-    """All three default fields are None when env vars not set."""
+    """All four default fields are None when env vars not set."""
     monkeypatch.setenv("GTMETRIX_API_KEY", "key")
     monkeypatch.delenv("GTMETRIX_DEFAULT_BROWSER", raising=False)
     monkeypatch.delenv("GTMETRIX_DEFAULT_DEVICE", raising=False)
     monkeypatch.delenv("GTMETRIX_DEFAULT_ADBLOCK", raising=False)
+    monkeypatch.delenv("GTMETRIX_DEFAULT_LOCATION", raising=False)
     from config import Settings
     s = Settings()
     assert s.gtmetrix_default_browser is None
     assert s.gtmetrix_default_device is None
     assert s.gtmetrix_default_adblock is None
+    assert s.gtmetrix_default_location is None

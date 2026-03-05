@@ -110,7 +110,7 @@ client/
 tools/
   account.py         # gtmetrix_check_status tool
   analyze.py         # gtmetrix_analyze and gtmetrix_list_locations tools
-tests/               # pytest suite (74 tests)
+tests/               # pytest suite (78 tests)
 ```
 
 ## Reference
