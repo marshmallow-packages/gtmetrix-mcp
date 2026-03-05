@@ -112,6 +112,7 @@ from tests.conftest import (
     MOCK_TEST_COMPLETED_RESPONSE,
     MOCK_REPORT_RESPONSE,
     MOCK_LIGHTHOUSE_RESPONSE,
+    MOCK_LOCATIONS_RESPONSE,
 )
 import json
 
@@ -230,3 +231,99 @@ async def test_start_test_http_error():
         async with GTMetrixClient(api_key="test_key") as client:
             with pytest.raises(httpx.HTTPStatusError):
                 await client.start_test("https://example.com")
+
+
+# --- Phase 3: Location and test parameter tests ---
+
+
+@pytest.mark.asyncio
+async def test_list_locations():
+    """list_locations() returns flat list of location dicts from JSON:API response."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_LOCATIONS_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+        mock_http.get = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result = await client.list_locations()
+
+        assert len(result) == 3
+        assert result[0]["id"] == "1"
+        assert result[0]["name"] == "Vancouver, Canada"
+        mock_http.get.assert_called_once_with("/locations")
+
+
+@pytest.mark.asyncio
+async def test_list_locations_cached():
+    """list_locations() caches result; second call does not make another HTTP request."""
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_LOCATIONS_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+        mock_http.get = AsyncMock(return_value=mock_response)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            result1 = await client.list_locations()
+            result2 = await client.list_locations()
+
+        assert result1 == result2
+        assert mock_http.get.call_count == 1
+
+
+@pytest.mark.asyncio
+async def test_start_test_with_location():
+    """start_test() with location parameter includes location in JSON:API body."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["url"] = url
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com", location="2")
+
+    body = captured_request["json"]
+    assert body["data"]["attributes"]["url"] == "https://example.com"
+    assert body["data"]["attributes"]["location"] == "2"
+
+
+@pytest.mark.asyncio
+async def test_start_test_without_location():
+    """start_test() without location parameter does not include location in body."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["url"] = url
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com")
+
+    body = captured_request["json"]
+    assert body["data"]["attributes"]["url"] == "https://example.com"
+    assert "location" not in body["data"]["attributes"]

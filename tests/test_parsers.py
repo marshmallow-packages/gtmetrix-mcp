@@ -1,6 +1,6 @@
 """Tests for client/parsers.py -- SERV-04, REPT-01, REPT-02, REPT-03."""
-from client.parsers import unwrap_jsonapi, extract_vitals, filter_failing_audits, extract_top_resources, _truncate_url
-from tests.conftest import MOCK_LIGHTHOUSE_RESPONSE, MOCK_HAR_RESPONSE
+from client.parsers import unwrap_jsonapi, unwrap_jsonapi_list, extract_vitals, filter_failing_audits, extract_top_resources, _truncate_url
+from tests.conftest import MOCK_LIGHTHOUSE_RESPONSE, MOCK_HAR_RESPONSE, MOCK_LOCATIONS_RESPONSE
 
 
 GTMETRIX_STATUS_ENVELOPE = {
@@ -203,3 +203,32 @@ class TestTruncateUrl:
         """URLs shorter than max_length are returned as-is."""
         url = "https://example.com/short.js"
         assert _truncate_url(url) == url
+
+
+# --- Phase 3: JSON:API list parser tests ---
+
+
+class TestUnwrapJsonapiList:
+    """Tests for unwrap_jsonapi_list()."""
+
+    def test_unwrap_jsonapi_list(self):
+        """JSON:API list response is flattened to list of flat dicts."""
+        result = unwrap_jsonapi_list(MOCK_LOCATIONS_RESPONSE)
+        assert len(result) == 3
+        assert result[0]["id"] == "1"
+        assert result[0]["type"] == "location"
+        assert result[0]["name"] == "Vancouver, Canada"
+        assert result[0]["region"] == "North America"
+        assert result[0]["default"] is True
+        assert result[0]["account_has_access"] is True
+        assert result[0]["browsers"] == [1, 3]
+
+    def test_unwrap_jsonapi_list_empty(self):
+        """Empty data array returns empty list."""
+        result = unwrap_jsonapi_list({"data": []})
+        assert result == []
+
+    def test_unwrap_jsonapi_list_missing_data(self):
+        """Missing data key returns empty list."""
+        result = unwrap_jsonapi_list({})
+        assert result == []

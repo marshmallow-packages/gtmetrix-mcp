@@ -95,6 +95,44 @@ MOCK_LIGHTHOUSE_RESPONSE = {
     },
 }
 
+MOCK_LOCATIONS_RESPONSE = {
+    "data": [
+        {
+            "type": "location",
+            "id": "1",
+            "attributes": {
+                "name": "Vancouver, Canada",
+                "region": "North America",
+                "default": True,
+                "account_has_access": True,
+                "browsers": [1, 3],
+            },
+        },
+        {
+            "type": "location",
+            "id": "2",
+            "attributes": {
+                "name": "London, UK",
+                "region": "Europe",
+                "default": False,
+                "account_has_access": True,
+                "browsers": [1, 3],
+            },
+        },
+        {
+            "type": "location",
+            "id": "5",
+            "attributes": {
+                "name": "Mumbai, India",
+                "region": "Asia Pacific",
+                "default": False,
+                "account_has_access": False,
+                "browsers": [1],
+            },
+        },
+    ]
+}
+
 MOCK_HAR_RESPONSE = {
     "log": {
         "version": "1.2",
