@@ -10,13 +10,17 @@ import pytest
 from tests.conftest import (
     MOCK_HAR_RESPONSE,
     MOCK_LIGHTHOUSE_RESPONSE,
+    MOCK_LOCATIONS_RESPONSE,
     MOCK_REPORT_RESPONSE,
 )
-from client.parsers import unwrap_jsonapi
+from client.parsers import unwrap_jsonapi, unwrap_jsonapi_list
 
 
 # Pre-unwrapped report for use in tests
 UNWRAPPED_REPORT = unwrap_jsonapi(MOCK_REPORT_RESPONSE)
+
+# Pre-unwrapped locations for use in tests
+UNWRAPPED_LOCATIONS = unwrap_jsonapi_list(MOCK_LOCATIONS_RESPONSE)
 
 
 def _make_client(**overrides):
@@ -209,3 +213,101 @@ async def test_analyze_unexpected_error():
     assert "error" in result
     assert "detail" in result
     assert "Something broke" in result["detail"]
+
+
+# --- Location tests ---
+
+
+def _make_location_client(**overrides):
+    """Build an AsyncMock GTMetrixClient with location support for the happy path."""
+    client = _make_client(**overrides)
+    client.list_locations = AsyncMock(
+        return_value=overrides.get("list_locations", UNWRAPPED_LOCATIONS)
+    )
+    return client
+
+
+@pytest.mark.asyncio
+async def test_analyze_with_location():
+    """Passing location='2' sends it to start_test and completes normally."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_location_client()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", location="2")
+
+    assert "error" not in result
+    assert result["url"] == "https://example.com"
+    client.start_test.assert_called_once_with("https://example.com", location="2")
+
+
+@pytest.mark.asyncio
+async def test_analyze_invalid_location():
+    """Invalid location returns error with accessible locations only (Mumbai filtered out)."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_location_client()
+
+    result = await _analyze_impl(client, "https://example.com", location="99")
+
+    assert "error" in result
+    assert "Invalid location" in result["error"]
+    assert len(result["available_locations"]) == 2
+    location_ids = [loc["id"] for loc in result["available_locations"]]
+    assert "1" in location_ids
+    assert "2" in location_ids
+    assert "5" not in location_ids  # Mumbai not accessible
+    client.start_test.assert_not_called()
+
+
+@pytest.mark.asyncio
+async def test_analyze_location_string_coercion():
+    """Integer location=2 is coerced to string '2' and succeeds."""
+    from tools.analyze import _analyze_impl
+
+    client = _make_location_client()
+
+    with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
+        result = await _analyze_impl(client, "https://example.com", location=2)
+
+    assert "error" not in result
+    client.start_test.assert_called_once_with("https://example.com", location="2")
+
+
+@pytest.mark.asyncio
+async def test_list_locations_impl():
+    """Returns only accessible locations with count."""
+    from tools.analyze import _list_locations_impl
+
+    client = AsyncMock()
+    client.list_locations = AsyncMock(return_value=UNWRAPPED_LOCATIONS)
+
+    result = await _list_locations_impl(client)
+
+    assert result["count"] == 2
+    assert len(result["locations"]) == 2
+    location_ids = [loc["id"] for loc in result["locations"]]
+    assert "1" in location_ids
+    assert "2" in location_ids
+    assert "5" not in location_ids  # Mumbai not accessible
+
+
+@pytest.mark.asyncio
+async def test_list_locations_impl_error():
+    """Returns error dict when list_locations raises HTTPStatusError."""
+    from tools.analyze import _list_locations_impl
+
+    client = AsyncMock()
+    request = MagicMock(spec=httpx.Request)
+    request.url = "https://gtmetrix.com/api/2.0/locations"
+    response = MagicMock(spec=httpx.Response)
+    response.status_code = 500
+    client.list_locations = AsyncMock(
+        side_effect=httpx.HTTPStatusError("500 Server Error", request=request, response=response)
+    )
+
+    result = await _list_locations_impl(client)
+
+    assert "error" in result
+    assert "Failed to fetch locations" in result["error"]
