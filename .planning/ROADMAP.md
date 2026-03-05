@@ -74,15 +74,17 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Server Foundation | 4/4 | Complete   | 2026-03-04 |
 | 2. Core Analyze Workflow | 1/2 | In Progress|  |
 | 3. Location and Test Parameters | 2/2 | Complete   | 2026-03-05 |
-| 4. Docs & Options from Todo | 2/2 | Complete   | 2026-03-05 |
+| 4. Docs & Options from Todo | 2/4 | Gap Closure |  |
 
 ### Phase 4: Docs & Options from Todo
 
 **Goal:** Add browser, device, and adblock test parameters to gtmetrix_analyze with configurable defaults, create CHANGELOG, and update README with reference tables
 **Requirements**: TODO-PARAMS, TODO-DEFAULTS, TODO-README, TODO-CHANGELOG, TODO-ENVEXAMPLE
 **Depends on:** Phase 3
-**Plans:** 2/2 plans complete
+**Plans:** 4 plans (2 complete + 2 gap closure)
 
 Plans:
-- [ ] 04-01-PLAN.md — Add browser/device/adblock params to config, client, and analyze tool with TDD
-- [ ] 04-02-PLAN.md — Create CHANGELOG.md, update README with reference tables, update .env.example
+- [x] 04-01-PLAN.md — Add browser/device/adblock params to config, client, and analyze tool with TDD
+- [x] 04-02-PLAN.md — Create CHANGELOG.md, update README with reference tables, update .env.example
+- [ ] 04-03-PLAN.md — Gap closure: implement GTMETRIX_DEFAULT_LOCATION config field and default resolution
+- [ ] 04-04-PLAN.md — Gap closure: move todo files from pending/ to done/
