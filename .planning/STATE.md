@@ -85,6 +85,7 @@ Recent decisions affecting current work:
 
 - Commit README with install instructions (docs)
 - Add changelog and keep docs up to date (docs)
+- Add test parameter options with configurable defaults (api)
 
 ### Blockers/Concerns
 
