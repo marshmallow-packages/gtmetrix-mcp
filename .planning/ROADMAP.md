@@ -67,7 +67,7 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -75,6 +75,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 2. Core Analyze Workflow | 1/2 | In Progress|  |
 | 3. Location and Test Parameters | 2/2 | Complete   | 2026-03-05 |
 | 4. Docs & Options from Todo | 3/4 | In Progress|  |
+| 5. Finalize for Public Repo | 0/2 | Not Started|  |
 
 ### Phase 4: Docs & Options from Todo
 
@@ -88,3 +89,14 @@ Plans:
 - [x] 04-02-PLAN.md — Create CHANGELOG.md, update README with reference tables, update .env.example
 - [ ] 04-03-PLAN.md — Gap closure: implement GTMETRIX_DEFAULT_LOCATION config field and default resolution
 - [ ] 04-04-PLAN.md — Gap closure: move todo files from pending/ to done/
+
+### Phase 5: Finalize for public MCP GitHub repo
+
+**Goal:** Prepare the repo for public release with correct packaging metadata, MIT license, GitHub Actions CI, README polish, and cleanup of internal planning artifacts
+**Requirements**: PUB-01, PUB-02, PUB-03, PUB-04, PUB-05, PUB-06, PUB-07
+**Depends on:** Phase 4
+**Plans:** 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md — Fix pyproject.toml metadata, create MIT LICENSE, remove .planning/ from git tracking
+- [ ] 05-02-PLAN.md — Polish README with badges and contributing section, create GitHub Actions CI workflow
