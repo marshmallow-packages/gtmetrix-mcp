@@ -18,7 +18,7 @@ POLL_INTERVAL = 3  # seconds between poll requests
 DEFAULT_TIMEOUT = 300  # 5 minutes hard timeout
 
 
-async def _analyze_impl(client, url: str) -> dict:
+async def _analyze_impl(client, url: str, *, location: str | None = None) -> dict:
     """Core logic for gtmetrix_analyze. Accepts a GTMetrixClient instance.
 
     Orchestrates: start_test -> poll get_test -> fetch report/lighthouse/HAR ->
@@ -27,8 +27,25 @@ async def _analyze_impl(client, url: str) -> dict:
     Separated from the MCP decorator for testability.
     """
     try:
+        # Validate location if provided
+        if location is not None:
+            location = str(location)  # Coerce int to string
+            locations = await client.list_locations()
+            valid_ids = {loc["id"] for loc in locations}
+            if location not in valid_ids:
+                accessible = [
+                    {"id": loc["id"], "name": loc.get("name", ""), "region": loc.get("region", "")}
+                    for loc in locations
+                    if loc.get("account_has_access", False)
+                ]
+                return {
+                    "error": f"Invalid location: '{location}'",
+                    "hint": "Use one of the available location IDs listed below, or call gtmetrix_list_locations() to see all options",
+                    "available_locations": accessible,
+                }
+
         # Start the test
-        test = await client.start_test(url)
+        test = await client.start_test(url, location=location)
         test_id = test.get("id")
         if not test_id:
             return {
@@ -118,17 +135,38 @@ async def _analyze_impl(client, url: str) -> dict:
         }
 
 
+async def _list_locations_impl(client) -> dict:
+    """Core logic for gtmetrix_list_locations. Accepts a GTMetrixClient instance."""
+    try:
+        locations = await client.list_locations()
+        accessible = [
+            {"id": loc["id"], "name": loc.get("name", ""), "region": loc.get("region", "")}
+            for loc in locations
+            if loc.get("account_has_access", False)
+        ]
+        return {"locations": accessible, "count": len(accessible)}
+    except httpx.HTTPStatusError as exc:
+        return {"error": "Failed to fetch locations", "hint": f"HTTP {exc.response.status_code}"}
+    except Exception as exc:
+        return {"error": "Failed to fetch locations", "detail": str(exc)}
+
+
 def register(mcp) -> None:
     """Register analyze tools with the FastMCP server instance."""
     from mcp.server.fastmcp import Context
 
     @mcp.tool()
-    async def gtmetrix_analyze(url: str, ctx: Context) -> dict:
+    async def gtmetrix_analyze(url: str, location: str | None = None, *, ctx: Context) -> dict:
         """Analyze a URL's web performance with GTMetrix.
 
         Starts a GTMetrix test, waits for completion (polling every 3s, 5-minute
         timeout), then fetches and parses the report, Lighthouse audits, and HAR
         resource timing.
+
+        Args:
+            url: The URL to analyze.
+            location: Optional location ID to run the test from. Use
+                gtmetrix_list_locations() to discover available IDs.
 
         Returns a single dict with:
         - Core Web Vitals (performance_score, LCP, TBT, CLS)
@@ -138,4 +176,15 @@ def register(mcp) -> None:
         Use gtmetrix_check_status() first to verify you have API credits.
         """
         client = ctx.request_context.lifespan_context["client"]
-        return await _analyze_impl(client, url)
+        return await _analyze_impl(client, url, location=location)
+
+    @mcp.tool()
+    async def gtmetrix_list_locations(ctx: Context) -> dict:
+        """List available GTMetrix test locations.
+
+        Returns location IDs, names, and regions. Use the ID when specifying
+        a location in gtmetrix_analyze(). Only locations accessible to your
+        account are included.
+        """
+        client = ctx.request_context.lifespan_context["client"]
+        return await _list_locations_impl(client)
