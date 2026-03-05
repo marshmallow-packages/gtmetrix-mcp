@@ -6,6 +6,21 @@ from unittest.mock import AsyncMock, MagicMock
 import httpx
 
 
+@pytest.fixture(autouse=True)
+def _reset_config_singleton(monkeypatch):
+    """Ensure GTMETRIX_API_KEY is set and config singleton resets between tests.
+
+    Without env_file in Settings, the env var must be present for Settings()
+    to succeed. This fixture provides a safe default and clears the cached
+    singleton so each test gets a fresh Settings instance.
+    """
+    monkeypatch.setenv("GTMETRIX_API_KEY", "test_key_for_ci")
+    import config
+    config._settings = None
+    yield
+    config._settings = None
+
+
 MOCK_STATUS_RESPONSE = {
     "id": "test_api_key",
     "type": "user",

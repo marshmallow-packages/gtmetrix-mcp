@@ -52,8 +52,8 @@ async def _analyze_impl(
     """
     try:
         # Resolve defaults from config
-        from config import settings as default_settings
-        cfg = config or default_settings
+        from config import get_settings
+        cfg = config or get_settings()
         effective_location = location if location is not None else cfg.gtmetrix_default_location
         effective_browser = browser if browser is not None else cfg.gtmetrix_default_browser
         effective_device = device if device is not None else cfg.gtmetrix_default_device

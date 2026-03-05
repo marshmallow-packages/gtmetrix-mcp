@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 from contextlib import asynccontextmanager
 from mcp.server.fastmcp import FastMCP
 from client.gtmetrix import GTMetrixClient
-from config import settings
+from config import get_settings
 import tools.account as account_tools
 import tools.analyze as analyze_tools
 
@@ -31,7 +31,7 @@ async def lifespan(server):
     All tools access the client via ctx.request_context.lifespan_context["client"].
     """
     logger.info("GTMetrix MCP server starting — connecting HTTP client")
-    async with GTMetrixClient(api_key=settings.gtmetrix_api_key) as client:
+    async with GTMetrixClient(api_key=get_settings().gtmetrix_api_key) as client:
         yield {"client": client}
     logger.info("GTMetrix MCP server stopped — HTTP client closed")
 

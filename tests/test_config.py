@@ -1,4 +1,4 @@
-"""Tests for config.py -- SERV-02: API key loaded from .env via pydantic-settings."""
+"""Tests for config.py -- SERV-02: API key loaded from environment variables via pydantic-settings."""
 import pytest
 from unittest.mock import patch
 import os
