@@ -51,36 +51,37 @@ async def _analyze_impl(
     Separated from the MCP decorator for testability.
     """
     try:
+        # Resolve defaults from config
+        from config import settings as default_settings
+        cfg = config or default_settings
+        effective_location = location if location is not None else cfg.gtmetrix_default_location
+        effective_browser = browser if browser is not None else cfg.gtmetrix_default_browser
+        effective_device = device if device is not None else cfg.gtmetrix_default_device
+        effective_adblock = adblock if adblock is not None else cfg.gtmetrix_default_adblock
+
         # Validate location if provided
-        if location is not None:
-            location = str(location)  # Coerce int to string
+        if effective_location is not None:
+            effective_location = str(effective_location)  # Coerce int to string
             locations = await client.list_locations()
             valid_ids = {loc["id"] for loc in locations}
-            if location not in valid_ids:
+            if effective_location not in valid_ids:
                 accessible = [
                     {"id": loc["id"], "name": loc.get("name", ""), "region": loc.get("region", "")}
                     for loc in locations
                     if loc.get("account_has_access", False)
                 ]
                 return {
-                    "error": f"Invalid location: '{location}'",
+                    "error": f"Invalid location: '{effective_location}'",
                     "hint": "Use one of the available location IDs listed below, or call gtmetrix_list_locations() to see all options",
                     "available_locations": accessible,
                 }
-
-        # Resolve defaults from config
-        from config import settings as default_settings
-        cfg = config or default_settings
-        effective_browser = browser if browser is not None else cfg.gtmetrix_default_browser
-        effective_device = device if device is not None else cfg.gtmetrix_default_device
-        effective_adblock = adblock if adblock is not None else cfg.gtmetrix_default_adblock
         resolved_device = resolve_device(effective_device)
         adblock_int = int(effective_adblock) if effective_adblock is not None else None
 
         # Start the test
         test = await client.start_test(
             url,
-            location=location,
+            location=effective_location,
             browser=effective_browser,
             adblock=adblock_int,
             simulate_device=resolved_device,

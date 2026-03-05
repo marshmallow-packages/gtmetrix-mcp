@@ -9,6 +9,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
     gtmetrix_api_key: str
+    gtmetrix_default_location: str | None = None
     gtmetrix_default_browser: str | None = None
     gtmetrix_default_device: str | None = None
     gtmetrix_default_adblock: str | None = None

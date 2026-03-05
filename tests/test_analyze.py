@@ -499,34 +499,34 @@ async def test_analyze_no_default_no_param():
 
 @pytest.mark.asyncio
 async def test_analyze_default_location_from_config():
-    """When no explicit location param and config has gtmetrix_default_location='7', start_test is called with location='7'."""
+    """When no explicit location param and config has gtmetrix_default_location='2', start_test is called with location='2'."""
     from tools.analyze import _analyze_impl
 
     client = _make_param_client()
-    cfg = _mock_config(gtmetrix_default_location="7")
+    cfg = _mock_config(gtmetrix_default_location="2")
 
     with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
         result = await _analyze_impl(client, "https://example.com", config=cfg)
 
     assert "error" not in result
     _, kwargs = client.start_test.call_args
-    assert kwargs.get("location") == "7"
+    assert kwargs.get("location") == "2"
 
 
 @pytest.mark.asyncio
 async def test_analyze_explicit_location_overrides_config_default():
-    """Explicit location='3' overrides config default of '7'."""
+    """Explicit location='1' overrides config default of '2'."""
     from tools.analyze import _analyze_impl
 
     client = _make_param_client()
-    cfg = _mock_config(gtmetrix_default_location="7")
+    cfg = _mock_config(gtmetrix_default_location="2")
 
     with patch("tools.analyze.asyncio.sleep", new=_noop_sleep):
-        result = await _analyze_impl(client, "https://example.com", location="3", config=cfg)
+        result = await _analyze_impl(client, "https://example.com", location="1", config=cfg)
 
     assert "error" not in result
     _, kwargs = client.start_test.call_args
-    assert kwargs.get("location") == "3"
+    assert kwargs.get("location") == "1"
 
 
 @pytest.mark.asyncio
