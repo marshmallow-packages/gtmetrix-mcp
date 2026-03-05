@@ -67,20 +67,22 @@ Plans:
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3
+Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Server Foundation | 4/4 | Complete   | 2026-03-04 |
 | 2. Core Analyze Workflow | 1/2 | In Progress|  |
 | 3. Location and Test Parameters | 2/2 | Complete   | 2026-03-05 |
+| 4. Docs & Options from Todo | 0/2 | Planned | |
 
-### Phase 4: Docs & options from todo
+### Phase 4: Docs & Options from Todo
 
-**Goal:** [To be planned]
-**Requirements**: TBD
+**Goal:** Add browser, device, and adblock test parameters to gtmetrix_analyze with configurable defaults, create CHANGELOG, and update README with reference tables
+**Requirements**: TODO-PARAMS, TODO-DEFAULTS, TODO-README, TODO-CHANGELOG, TODO-ENVEXAMPLE
 **Depends on:** Phase 3
-**Plans:** 0 plans
+**Plans:** 2 plans
 
 Plans:
-- [ ] TBD (run /gsd:plan-phase 4 to break down)
+- [ ] 04-01-PLAN.md — Add browser/device/adblock params to config, client, and analyze tool with TDD
+- [ ] 04-02-PLAN.md — Create CHANGELOG.md, update README with reference tables, update .env.example
