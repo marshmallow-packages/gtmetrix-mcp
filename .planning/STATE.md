@@ -7,11 +7,11 @@ stopped_at: Completed 03-02-PLAN.md
 last_updated: "2026-03-05T10:16:21.627Z"
 last_activity: 2026-03-05 — Completed 03-01 (Locations Parser and Client Cache)
 progress:
-  total_phases: 3
+  total_phases: 4
   completed_phases: 3
   total_plans: 8
   completed_plans: 8
-  percent: 88
+  percent: 75
 ---
 
 # Project State
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-04)
 
 **Core value:** Scan a URL and get back structured performance data that Claude can reason about and use to guide code-level fixes
-**Current focus:** Phase 3 — Location and Test Parameters (in progress)
+**Current focus:** Phase 4 — Docs & options from todo (not yet planned)
 
 ## Current Position
 
-Phase: 3 of 3 (Location and Test Parameters)
-Plan: 1 of 2 in current phase
-Status: In Progress
-Last activity: 2026-03-05 — Completed 03-01 (Locations Parser and Client Cache)
+Phase: 4 of 4 (Docs & options from todo)
+Plan: 0 of 0 in current phase (needs planning)
+Status: Added to roadmap
+Last activity: 2026-03-05 — Added Phase 4 (Docs & options from todo)
 
-Progress: [█████████░] 88%
+Progress: [███████░░░] 75%
 
 ## Performance Metrics
 
