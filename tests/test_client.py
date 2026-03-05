@@ -327,3 +327,108 @@ async def test_start_test_without_location():
     body = captured_request["json"]
     assert body["data"]["attributes"]["url"] == "https://example.com"
     assert "location" not in body["data"]["attributes"]
+
+
+# --- Phase 4: New start_test parameters ---
+
+
+@pytest.mark.asyncio
+async def test_start_test_with_browser():
+    """start_test(url, browser='3') includes browser in attributes."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com", browser="3")
+
+    attrs = captured_request["json"]["data"]["attributes"]
+    assert attrs["browser"] == "3"
+
+
+@pytest.mark.asyncio
+async def test_start_test_with_adblock():
+    """start_test(url, adblock=1) includes adblock in attributes."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com", adblock=1)
+
+    attrs = captured_request["json"]["data"]["attributes"]
+    assert attrs["adblock"] == 1
+
+
+@pytest.mark.asyncio
+async def test_start_test_with_simulate_device():
+    """start_test(url, simulate_device='iphone_16') includes simulate_device in attributes."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com", simulate_device="iphone_16")
+
+    attrs = captured_request["json"]["data"]["attributes"]
+    assert attrs["simulate_device"] == "iphone_16"
+
+
+@pytest.mark.asyncio
+async def test_start_test_omits_none_params():
+    """Params that are None are NOT included in attributes dict."""
+    captured_request = {}
+
+    with patch("client.gtmetrix.httpx.AsyncClient") as mock_cls:
+        mock_http = AsyncMock()
+        mock_cls.return_value = mock_http
+        mock_response = MagicMock()
+        mock_response.json.return_value = MOCK_TEST_RESPONSE
+        mock_response.raise_for_status = MagicMock()
+
+        async def capture_post(url, **kwargs):
+            captured_request["json"] = kwargs.get("json")
+            return mock_response
+
+        mock_http.post = AsyncMock(side_effect=capture_post)
+
+        async with GTMetrixClient(api_key="test_key") as client:
+            await client.start_test("https://example.com", browser=None, adblock=None, simulate_device=None)
+
+    attrs = captured_request["json"]["data"]["attributes"]
+    assert "browser" not in attrs
+    assert "adblock" not in attrs
+    assert "simulate_device" not in attrs
