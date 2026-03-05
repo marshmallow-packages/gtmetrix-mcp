@@ -76,7 +76,15 @@ class GTMetrixClient:
         self._locations_cache = unwrap_jsonapi_list(response.json())
         return self._locations_cache
 
-    async def start_test(self, url: str, *, location: str | None = None) -> dict:
+    async def start_test(
+        self,
+        url: str,
+        *,
+        location: str | None = None,
+        browser: str | None = None,
+        adblock: int | None = None,
+        simulate_device: str | None = None,
+    ) -> dict:
         """Start a new GTMetrix test for the given URL.
 
         Sends POST /tests with a JSON:API body. Optionally includes a test
@@ -90,6 +98,12 @@ class GTMetrixClient:
         attributes: dict = {"url": url}
         if location is not None:
             attributes["location"] = location
+        if browser is not None:
+            attributes["browser"] = browser
+        if adblock is not None:
+            attributes["adblock"] = adblock
+        if simulate_device is not None:
+            attributes["simulate_device"] = simulate_device
         payload = {
             "data": {
                 "type": "test",
