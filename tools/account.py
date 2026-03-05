@@ -27,7 +27,7 @@ async def _check_status_impl(client) -> dict:
         return {
             "error": "Failed to fetch GTMetrix account status",
             "hint": (
-                "Verify GTMETRIX_API_KEY in your .env file is correct. "
+                "Verify GTMETRIX_API_KEY is set in your MCP host configuration (env block in Claude Code or Claude Desktop config). "
                 f"HTTP {exc.response.status_code} received."
             ),
         }
@@ -35,7 +35,7 @@ async def _check_status_impl(client) -> dict:
         logger.error("GTMetrix status check failed: %s", exc, exc_info=True)
         return {
             "error": "Failed to fetch GTMetrix account status",
-            "hint": "Verify GTMETRIX_API_KEY in .env and that the GTMetrix API is reachable",
+            "hint": "Verify GTMETRIX_API_KEY is set in your MCP host configuration and that the GTMetrix API is reachable",
             "detail": str(exc),
         }
 
