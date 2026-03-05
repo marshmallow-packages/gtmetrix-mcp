@@ -18,4 +18,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Automatic test polling (3-second intervals, 5-minute timeout)
 - Structured error responses with actionable hints for all failure modes
 - JSON:API response parsing for all GTMetrix API v2.0 endpoints
-- stdio transport for Claude Code MCP integration
+- Configuration via MCP host environment variables (Claude Code `env` block or Claude Desktop config)
+- GitHub Actions CI workflow with Python 3.11/3.12/3.13 matrix
+- stdio transport for Claude Code and Claude Desktop MCP integration
