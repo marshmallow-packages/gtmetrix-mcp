@@ -1,3 +1,7 @@
+[![CI](https://img.shields.io/github/actions/workflow/status/marshmallow-packages/gtmetrix-mcp/ci.yml?branch=main&label=tests)](https://github.com/marshmallow-packages/gtmetrix-mcp/actions)
+[![Python](https://img.shields.io/badge/python-3.11%20%7C%203.12%20%7C%203.13-blue)](https://github.com/marshmallow-packages/gtmetrix-mcp)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
 # GTMetrix MCP Server
 
 An MCP server that lets Claude analyze website performance using the [GTMetrix API](https://gtmetrix.com/api/). Scan any URL and get back structured Core Web Vitals, failing Lighthouse audits, and resource waterfall data that Claude can reason about to suggest code-level fixes.
@@ -19,7 +23,7 @@ An MCP server that lets Claude analyze website performance using the [GTMetrix A
 ## Installation
 
 ```bash
-git clone <repo-url> gtmetrix-mcp-server
+git clone https://github.com/marshmallow-packages/gtmetrix-mcp.git gtmetrix-mcp-server
 cd gtmetrix-mcp-server
 uv sync
 ```
@@ -149,3 +153,11 @@ Calling `gtmetrix_analyze("https://example.com")` returns:
   ]
 }
 ```
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Run tests: `uv run pytest tests/ -v`
+4. Run linting: `uv run ruff check .`
+5. Submit a pull request
