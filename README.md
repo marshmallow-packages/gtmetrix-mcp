@@ -36,15 +36,19 @@ Add to your Claude Code MCP settings (`~/.claude/settings.json` or project `.mcp
 {
   "mcpServers": {
     "gtmetrix": {
-      "command": "uv",
+      "command": "/path/to/uv",
       "args": ["run", "--directory", "/path/to/gtmetrix-mcp-server", "python", "main.py"],
       "env": {
-        "GTMETRIX_API_KEY": "your_api_key_here"
+        "GTMETRIX_API_KEY": "your_api_key_here",
+        "GTMETRIX_DEFAULT_LOCATION": "1",
+        "GTMETRIX_DEFAULT_BROWSER": "3"
       }
     }
   }
 }
 ```
+
+> **Tip:** Use the full path to `uv` (e.g. `/opt/homebrew/bin/uv`). MCP hosts like the VS Code extension don't inherit your shell's `$PATH`, so a bare `uv` will fail with "Executable not found". Run `which uv` to find the path.
 
 Then ask Claude things like:
 
@@ -63,10 +67,12 @@ Add to your Claude Desktop config (`claude_desktop_config.json`):
 {
   "mcpServers": {
     "gtmetrix": {
-      "command": "uv",
+      "command": "/path/to/uv",
       "args": ["run", "--directory", "/path/to/gtmetrix-mcp-server", "python", "main.py"],
       "env": {
-        "GTMETRIX_API_KEY": "your_api_key_here"
+        "GTMETRIX_API_KEY": "your_api_key_here",
+        "GTMETRIX_DEFAULT_LOCATION": "1",
+        "GTMETRIX_DEFAULT_BROWSER": "3"
       }
     }
   }
@@ -87,9 +93,9 @@ uv run pytest tests/ -v
 
 ## Configuration
 
-Set these in the `env` block of your MCP client config. See setup examples above.
+Set these in the `env` block of your MCP client config. See setup examples above. All values must be **strings** (quoted in JSON).
 
-All parameters can have defaults set via environment variables. Explicit tool parameters always override defaults.
+Explicit tool parameters always override defaults.
 
 | Environment Variable | Description | Example |
 |---------------------|-------------|---------|
@@ -133,9 +139,35 @@ Simulated devices require a GTMetrix PRO account. You can also pass any raw GTMe
 
 Use `gtmetrix_list_locations()` to see which browsers are available per location. Browser IDs may vary by account.
 
-### Locations
+### Common Locations
 
-Locations vary by account. Use `gtmetrix_list_locations()` to see your available locations with IDs.
+Use `gtmetrix_list_locations()` to see all available locations for your account. Some common location IDs:
+
+**Europe:**
+
+| ID | Location |
+|----|----------|
+| `13` | Amsterdam, Netherlands |
+| `15` | Frankfurt, Germany |
+| `2` | London, UK |
+| `14` | Paris, France |
+| `23` | Madrid, Spain |
+| `16` | Stockholm, Sweden |
+
+**North America:**
+
+| ID | Location |
+|----|----------|
+| `4` | San Antonio, TX |
+| `9` | San Francisco, CA |
+| `11` | Chicago, IL |
+| `24` | Seattle, WA |
+| `8` | Quebec City, Canada |
+| `10` | Cheyenne, WY |
+| `12` | Danville, VA |
+| `25` | Mexico City, Mexico |
+
+Additional locations are available in Asia Pacific, Latin America, Africa, and Middle East.
 
 ## Example Response
 

@@ -27,3 +27,6 @@ htmlcov/
 
 # Planning docs (internal)
 .planning/
+
+# mcp
+.mcp.json
