@@ -83,7 +83,7 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Commit README with install instructions (docs)
 
 ### Blockers/Concerns
 
